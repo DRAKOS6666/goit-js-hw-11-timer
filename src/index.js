@@ -6,7 +6,12 @@ class CountdownTimer {
     this.targetDate = obj.targetDate;
   }
 
-  get time() {
+  set newDate(date) {
+    this.refs().userDate.value = new Date(date).toISOString().slice(0, 16);
+    this.targetDate = date;
+  }
+
+  timeMath() {
     const time = Date.parse(this.targetDate) - new Date();
 
     const days = Math.floor(time / (1000 * 60 * 60 * 24));
@@ -20,37 +25,57 @@ class CountdownTimer {
       secs,
     };
   }
+
+  refs() {
+    return {
+      userDate: document.querySelector(
+        `${this.selector} input[type="datetime-local"]`,
+      ),
+      day: document.querySelector(`${this.selector} span[data-value="days"]`),
+      hour: document.querySelector(`${this.selector} span[data-value="hours"]`),
+      min: document.querySelector(`${this.selector} span[data-value="mins"]`),
+      sec: document.querySelector(`${this.selector} span[data-value="secs"]`),
+    };
+  }
+
+  timer() {
+    this.refs().userDate.addEventListener('change', event => {
+      this.newDate = event.target.value;
+    });
+
+    setInterval(() => {
+      this.refs().day.textContent = this.timeMath().days;
+      this.refs().hour.textContent = this.timeMath().hours;
+      this.refs().min.textContent = this.timeMath().mins;
+      this.refs().sec.textContent = this.timeMath().secs;
+    }, 1000);
+  }
 }
 
-const refs = {
-  userDate: document.querySelector('input[type="datetime-local"]'),
-  day: document.querySelector('span[data-value="days"]'),
-  hour: document.querySelector('span[data-value="hours"]'),
-  min: document.querySelector('span[data-value="mins"]'),
-  sec: document.querySelector('span[data-value="secs"]'),
-};
+const timer1 = new CountdownTimer({
+  selector: '#timer-1',
+  targetDate: new Date('Jul 17, 2021'),
+});
+const timer2 = new CountdownTimer({
+  selector: '#timer-2',
+  targetDate: new Date('Jul 17, 2021'),
+});
 
-const timer = date => {
-  const newTimer = new CountdownTimer({
-    selector: '#timer-1',
-    targetDate: date,
-  });
-  return newTimer;
-};
+timer1.timer();
+timer2.timer();
 
-// refs.userDate.value = new Date().toISOString().slice(0, 16);
+timer1.newDate = new Date(2020, 11, 6, 7, 0);
 
-// refs.userDate.addEventListener('change', () => {
-//   console.log(refs.userDate.value);
-//   console.dir(refs.userDate);
+// refs.userDate.addEventListener('change', event => {
+//   timer1.newDate(event.target.value);
 // });
 
-const countdowdID = setInterval(() => {
-  refs.day.textContent = timer(refs.userDate.value).time.days;
-  refs.hour.textContent = timer(refs.userDate.value).time.hours;
-  refs.min.textContent = timer(refs.userDate.value).time.mins;
-  refs.sec.textContent = timer(refs.userDate.value).time.secs;
-  //   refs.hour.textContent = timer.time.hours;
-  //   refs.min.textContent = timer.time.mins;
-  //   refs.sec.textContent = timer.time.secs;
-}, 1000);
+// const timer = date => {
+//   const newTimer = new CountdownTimer({
+//     selector: '#timer-1',
+//     targetDate: date,
+//   });
+//   return newTimer;
+// };
+
+// refs.userDate.value = new Date().toISOString().slice(0, 16);
