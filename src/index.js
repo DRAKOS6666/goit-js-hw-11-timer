@@ -6,7 +6,7 @@ class CountdownTimer {
     this.targetDate = obj.targetDate;
   }
 
-  set newDate(date) {    
+  set newDate(date) {
     this.refs().userDate.value = new Date(date).toISOString().slice(0, 23);
     this.targetDate = date;
   }
@@ -14,10 +14,12 @@ class CountdownTimer {
   timeMath() {
     const time = Date.parse(this.targetDate) - new Date();
 
-    const days = Math.floor(time / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((time % (1000 * 60)) / 1000);
+    const days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
+    const hours = this.pad(
+      Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+    );
+    const mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
+    const secs = this.pad(Math.floor((time % (1000 * 60)) / 1000));
     return {
       days,
       hours,
@@ -39,22 +41,25 @@ class CountdownTimer {
   }
 
   start() {
-    this.refs().userDate.addEventListener('change', event => {
+    const refs = this.refs();
+    refs.userDate.addEventListener('change', event => {
       this.newDate = event.target.value;
-    })  
+    });
 
     this.ingervalId = setInterval(() => {
-      this.refs().day.textContent = this.timeMath().days;
-      this.refs().hour.textContent = this.timeMath().hours;
-      this.refs().min.textContent = this.timeMath().mins;
-      this.refs().sec.textContent = this.timeMath().secs;
+      refs.day.textContent = this.timeMath().days;
+      refs.hour.textContent = this.timeMath().hours;
+      refs.min.textContent = this.timeMath().mins;
+      refs.sec.textContent = this.timeMath().secs;
     }, 1000);
   }
 
   stop() {
     clearInterval(this.ingervalId);
   }
-
+  pad(value) {
+    return String(value).padStart(2, '0');
+  }
 }
 
 const timer1 = new CountdownTimer({
@@ -71,5 +76,3 @@ timer2.start();
 
 timer1.newDate = new Date(2020, 11, 6, 7, 0);
 timer2.newDate = new Date('2020-08-27T06:03:00.000');
-
-setTimeout(timer1.stop(), 5000);
