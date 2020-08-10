@@ -6,8 +6,8 @@ class CountdownTimer {
     this.targetDate = obj.targetDate;
   }
 
-  set newDate(date) {
-    this.refs().userDate.value = new Date(date).toISOString().slice(0, 16);
+  set newDate(date) {    
+    this.refs().userDate.value = new Date(date).toISOString().slice(0, 23);
     this.targetDate = date;
   }
 
@@ -38,18 +38,23 @@ class CountdownTimer {
     };
   }
 
-  timer() {
+  start() {
     this.refs().userDate.addEventListener('change', event => {
       this.newDate = event.target.value;
-    });
+    })  
 
-    setInterval(() => {
+    this.ingervalId = setInterval(() => {
       this.refs().day.textContent = this.timeMath().days;
       this.refs().hour.textContent = this.timeMath().hours;
       this.refs().min.textContent = this.timeMath().mins;
       this.refs().sec.textContent = this.timeMath().secs;
     }, 1000);
   }
+
+  stop() {
+    clearInterval(this.ingervalId);
+  }
+
 }
 
 const timer1 = new CountdownTimer({
@@ -58,24 +63,13 @@ const timer1 = new CountdownTimer({
 });
 const timer2 = new CountdownTimer({
   selector: '#timer-2',
-  targetDate: new Date('Jul 17, 2021'),
+  targetDate: new Date('Feb 27, 2021'),
 });
 
-timer1.timer();
-timer2.timer();
+timer1.start();
+timer2.start();
 
 timer1.newDate = new Date(2020, 11, 6, 7, 0);
+timer2.newDate = new Date('2020-08-27T06:03:00.000');
 
-// refs.userDate.addEventListener('change', event => {
-//   timer1.newDate(event.target.value);
-// });
-
-// const timer = date => {
-//   const newTimer = new CountdownTimer({
-//     selector: '#timer-1',
-//     targetDate: date,
-//   });
-//   return newTimer;
-// };
-
-// refs.userDate.value = new Date().toISOString().slice(0, 16);
+setTimeout(timer1.stop(), 5000);
